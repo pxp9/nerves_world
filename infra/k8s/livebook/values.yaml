@@ -1,0 +1,34 @@
+# Livebook Helm Chart Values
+# Chart: oci://ghcr.io/mruoss/charts/livebook
+# Documentation: https://github.com/mruoss/livebook-helm
+
+# Authentication and image configuration
+livebook:
+  # Image version
+  image:
+    registry: ghcr.io
+    repository: livebook-dev/livebook
+    tag: "0.18.1"
+
+  # Authentication (minimum 12 characters required)
+  auth:
+    livebookPassword: "changeme123456"  # Change this to a secure password!
+
+# Service configuration
+service:
+  type: NodePort
+  nodePort: 30080
+
+# Resource limits
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "1000m"
+
+# Persistence
+persistence:
+  enabled: true
+  size: 5Gi

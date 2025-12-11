@@ -36,6 +36,7 @@
 
             # Kubernetes
             kubectl
+            kubernetes-helm
           ];
 
           shellHook = ''
@@ -45,6 +46,7 @@
             echo "Terraform: $(terraform version | head -n1)"
             echo "Ansible: $(ansible --version | head -n1)"
             echo "Kubectl: $(kubectl version --client 2>/dev/null | grep 'Client Version' || echo 'installed')"
+            echo "Helm: $(helm version --short 2>/dev/null || echo 'installed')"
             echo ""
 
             # Set KUBECONFIG if k3s-kubeconfig.yaml exists
