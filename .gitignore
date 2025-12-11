@@ -1,0 +1,33 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+secrets.tfvars
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Ansible files
+*.retry
+k3s-kubeconfig.yaml
+
+# Environment variables
+.env
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Direnv
+.direnv/

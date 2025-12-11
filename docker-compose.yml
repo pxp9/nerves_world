@@ -1,0 +1,27 @@
+services:
+  terraform-mcp:
+    image: hashicorp/terraform-mcp-server
+    container_name: terraform-mcp-server
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: false
+    volumes:
+      - ./infra/terraform:/workspace
+      - terraform-cache:/root/.terraform.d
+    environment:
+      - TF_LOG=${TF_LOG:-INFO}
+      - TRANSPORT_MODE=streamable-http
+      - TRANSPORT_HOST=0.0.0.0
+    working_dir: /workspace
+    restart: unless-stopped
+    networks:
+      - dev-network
+
+volumes:
+  terraform-cache:
+    driver: local
+
+networks:
+  dev-network:
+    driver: bridge

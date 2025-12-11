@@ -1,0 +1,8 @@
+---
+all:
+  hosts:
+    main_server:
+      ansible_host: 46.224.118.16
+      ansible_user: pxp9
+      ansible_ssh_private_key_file: ~/.ssh/hetzner
+      ansible_python_interpreter: /usr/bin/python3
