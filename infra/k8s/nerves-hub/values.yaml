@@ -1,0 +1,136 @@
+# NervesHub Helm Chart Values
+# Chart for deploying NervesHub firmware update server
+# Documentation: https://github.com/nerves-hub/nerves_hub_web
+
+# NervesHub application configuration
+nervesHub:
+  image:
+    repository: ghcr.io/nerves-hub/nerves-hub
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  replicaCount: 1
+
+  # Application configuration
+  config:
+    # NOTE: These values are not used when deploying with SealedSecrets
+    # Secrets are managed via unified SealedSecret (sealed-secrets/sealed-secret-unified.yaml)
+    secretKeyBase: ""
+    liveViewSigningSalt: ""
+
+    # Hostname for accessing NervesHub
+    host: "nerveshub.local"
+
+    # Database connection (uses PostgreSQL service if enabled)
+    databaseUrl: "postgresql://postgres:postgres@nerves-hub-postgresql:5432/nerves_hub?ssl=false"
+
+    # ClickHouse connection
+    clickhouseUrl: "http://nerves-hub-clickhouse:8123/default"
+
+    # S3/Object storage configuration (optional, configure if needed)
+    s3Enabled: false
+    s3Bucket: ""
+    s3Region: "us-east-1"
+    s3AccessKeyId: ""
+    s3SecretAccessKey: ""
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 4000
+    targetPort: 4000
+
+  # Ingress configuration
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    hosts:
+      - host: nerves-hub.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+      # - secretName: nerves-hub-tls
+      #   hosts:
+      #     - nerves-hub.local
+
+  # Resource limits
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+  # Persistence for uploaded firmware
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 20Gi
+
+  # TLS/SSL configuration
+  # NOTE: TLS secrets are managed via unified SealedSecret (sealed-secrets/sealed-secret-unified.yaml)
+  tls:
+    privateKey: ""
+    certificate: ""
+
+# PostgreSQL configuration (using Bitnami chart)
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "16"
+  auth:
+    username: postgres
+    # Password is managed via unified SealedSecret (sealed-secrets/sealed-secret-unified.yaml)
+    existingSecret: nerves-hub-unified
+    database: nerves_hub
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+
+# ClickHouse configuration
+clickhouse:
+  enabled: true
+  image:
+    repository: clickhouse/clickhouse-server
+    tag: "25.4.2.31"
+    pullPolicy: IfNotPresent
+
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    httpPort: 8123
+    nativePort: 9000
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 10Gi
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+  # ClickHouse configuration
+  config:
+    skipUserSetup: true

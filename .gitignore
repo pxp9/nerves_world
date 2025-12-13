@@ -31,3 +31,12 @@ k3s-kubeconfig.yaml
 
 # Direnv
 .direnv/
+
+# Kubernetes secrets
+**/*values.secrets.yaml
+# Sealed secrets are encrypted and safe to commit
+# Only ignore example files
+
+# Helm
+**/Chart.lock
+**/charts/*.tgz

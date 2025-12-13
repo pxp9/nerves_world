@@ -1,0 +1,17 @@
+{{- if .Values.nervesHub.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "nerves-hub.fullname" . }}-data
+  labels:
+    {{- include "nerves-hub.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.nervesHub.persistence.accessMode }}
+  {{- if .Values.nervesHub.persistence.storageClass }}
+  storageClassName: {{ .Values.nervesHub.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.nervesHub.persistence.size }}
+{{- end }}

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nerves-hub.fullname" . }}
+  labels:
+    {{- include "nerves-hub.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.nervesHub.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nerves-hub.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "nerves-hub.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.nervesHub.persistence.enabled }}
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:latest
+          command: ['sh', '-c', 'until nc -z {{ .Release.Name }}-postgresql 5432; do echo waiting for postgres; sleep 2; done']
+        {{- if .Values.clickhouse.enabled }}
+        - name: wait-for-clickhouse
+          image: busybox:latest
+          command: ['sh', '-c', 'until nc -z {{ include "nerves-hub.clickhouse.fullname" . }} 8123; do echo waiting for clickhouse; sleep 2; done']
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: nerves-hub
+          image: "{{ .Values.nervesHub.image.repository }}:{{ .Values.nervesHub.image.tag }}"
+          imagePullPolicy: {{ .Values.nervesHub.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nervesHub.service.targetPort }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "nerves-hub.fullname" . }}-config
+            - secretRef:
+                name: nerves-hub-unified
+          {{- if .Values.nervesHub.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/priv/static/firmware
+          {{- end }}
+          resources:
+            {{- toYaml .Values.nervesHub.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+      {{- if .Values.nervesHub.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "nerves-hub.fullname" . }}-data
+      {{- end }}

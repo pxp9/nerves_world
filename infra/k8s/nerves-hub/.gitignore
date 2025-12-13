@@ -1,0 +1,23 @@
+# Unsealed secrets - NEVER commit this file!
+secrets.yaml
+
+# Helm generated files
+charts/
+*.tgz
+
+# Values overrides (may contain secrets)
+values.secrets.yaml
+values.local.yaml
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Certificate files (if generated locally)
+certs/*.pem
+certs/*.key
+certs/*.crt
+
+# kubeseal output before review
+sealed-secrets/*.tmp.yaml

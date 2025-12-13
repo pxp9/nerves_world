@@ -1,0 +1,21 @@
+{{- if .Values.clickhouse.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nerves-hub.clickhouse.fullname" . }}
+  labels:
+    {{- include "nerves-hub.clickhouse.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.clickhouse.service.type }}
+  ports:
+    - port: {{ .Values.clickhouse.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.clickhouse.service.nativePort }}
+      targetPort: native
+      protocol: TCP
+      name: native
+  selector:
+    {{- include "nerves-hub.clickhouse.selectorLabels" . | nindent 4 }}
+{{- end }}

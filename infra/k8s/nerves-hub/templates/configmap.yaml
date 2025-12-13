@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nerves-hub.fullname" . }}-config
+  labels:
+    {{- include "nerves-hub.labels" . | nindent 4 }}
+data:
+  DATABASE_SSL: "false"
+  {{- if .Values.nervesHub.config.s3Enabled }}
+  S3_BUCKET: {{ .Values.nervesHub.config.s3Bucket | quote }}
+  S3_REGION: {{ .Values.nervesHub.config.s3Region | quote }}
+  {{- end }}
+  PORT: {{ .Values.nervesHub.service.port | quote }}
+  HOST: {{ .Values.nervesHub.config.host | default "nerveshub.local" | quote }}
+  APP_NAME: "nerves_hub"
+  PRIVATE_IP: "127.0.0.1"

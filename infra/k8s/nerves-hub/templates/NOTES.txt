@@ -1,0 +1,65 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about this release, try:
+
+  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 NervesHub has been deployed!
+
+1. Check the deployment status:
+
+   kubectl get pods -n {{ .Release.Namespace }}
+
+2. Access NervesHub:
+
+{{- if .Values.nervesHub.ingress.enabled }}
+{{- range .Values.nervesHub.ingress.hosts }}
+   External URL: https://{{ .host }}
+{{- end }}
+{{- else }}
+
+   Port-forward to access locally:
+
+   kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "nerves-hub.fullname" . }} 4000:{{ .Values.nervesHub.service.port }}
+
+   Then visit: http://localhost:4000
+{{- end }}
+
+3. View logs:
+
+   kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/name={{ include "nerves-hub.name" . }} -f
+
+4. Database operations:
+
+   # Run migrations (if needed)
+   kubectl exec -n {{ .Release.Namespace }} deployment/{{ include "nerves-hub.fullname" . }} -- mix ecto.migrate
+
+   # Access PostgreSQL console
+   kubectl exec -it -n {{ .Release.Namespace }} deployment/{{ .Release.Name }}-postgresql -- psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  IMPORTANT SECURITY NOTES:
+
+{{- if eq .Values.nervesHub.config.secretKeyBase "CHANGE_ME_GENERATE_WITH_mix_phx.gen.secret" }}
+⚠️  WARNING: You are using the default SECRET_KEY_BASE!
+   Please generate a secure secret with: mix phx.gen.secret
+   Then update values.yaml and run: helm upgrade {{ .Release.Name }} .
+{{- end }}
+
+{{- if eq .Values.postgresql.auth.password "postgres" }}
+⚠️  WARNING: You are using the default PostgreSQL password!
+   Please change it in production environments.
+{{- end }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 Documentation: https://github.com/nerves-hub/nerves_hub_web
+💬 Support: https://elixirforum.com/c/nerves-forum
+
+Happy device managing! 🎉

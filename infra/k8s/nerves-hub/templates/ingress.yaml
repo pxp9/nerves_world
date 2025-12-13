@@ -1,0 +1,41 @@
+{{- if .Values.nervesHub.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "nerves-hub.fullname" . }}
+  labels:
+    {{- include "nerves-hub.labels" . | nindent 4 }}
+  {{- with .Values.nervesHub.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.nervesHub.ingress.className }}
+  ingressClassName: {{ .Values.nervesHub.ingress.className }}
+  {{- end }}
+  {{- if .Values.nervesHub.ingress.tls }}
+  tls:
+    {{- range .Values.nervesHub.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.nervesHub.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "nerves-hub.fullname" $ }}
+                port:
+                  number: {{ $.Values.nervesHub.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

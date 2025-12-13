@@ -1,0 +1,20 @@
+apiVersion: v2
+name: nerves-hub
+description: A Helm chart for NervesHub - firmware update and device management server
+type: application
+version: 0.1.0
+appVersion: "main"
+keywords:
+  - nerves
+  - iot
+  - firmware
+  - device-management
+maintainers:
+  - name: pxp9
+sources:
+  - https://github.com/nerves-hub/nerves_hub_web
+dependencies:
+  - name: postgresql
+    version: "16.2.1"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

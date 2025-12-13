@@ -1,0 +1,74 @@
+{{- if .Values.clickhouse.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nerves-hub.clickhouse.fullname" . }}
+  labels:
+    {{- include "nerves-hub.clickhouse.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "nerves-hub.clickhouse.fullname" . }}
+  replicas: {{ .Values.clickhouse.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nerves-hub.clickhouse.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nerves-hub.clickhouse.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: clickhouse
+          image: "{{ .Values.clickhouse.image.repository }}:{{ .Values.clickhouse.image.tag }}"
+          imagePullPolicy: {{ .Values.clickhouse.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.clickhouse.service.httpPort }}
+              protocol: TCP
+            - name: native
+              containerPort: {{ .Values.clickhouse.service.nativePort }}
+              protocol: TCP
+          env:
+            {{- if .Values.clickhouse.config.skipUserSetup }}
+            - name: CLICKHOUSE_SKIP_USER_SETUP
+              value: "1"
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/clickhouse
+          resources:
+            {{- toYaml .Values.clickhouse.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      securityContext:
+        fsGroup: 101
+        runAsUser: 101
+        runAsNonRoot: true
+  {{- if .Values.clickhouse.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - {{ .Values.clickhouse.persistence.accessMode }}
+        {{- if .Values.clickhouse.persistence.storageClass }}
+        storageClassName: {{ .Values.clickhouse.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.clickhouse.persistence.size }}
+  {{- else }}
+      volumes:
+        - name: data
+          emptyDir: {}
+  {{- end }}
+{{- end }}

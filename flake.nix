@@ -37,6 +37,14 @@
             # Kubernetes
             kubectl
             kubernetes-helm
+            kubeseal
+
+            # Elixir
+            elixir
+            erlang_27
+
+            # SSL/TLS tools
+            openssl
           ];
 
           shellHook = ''
@@ -47,6 +55,8 @@
             echo "Ansible: $(ansible --version | head -n1)"
             echo "Kubectl: $(kubectl version --client 2>/dev/null | grep 'Client Version' || echo 'installed')"
             echo "Helm: $(helm version --short 2>/dev/null || echo 'installed')"
+            echo "Elixir: $(elixir --version | grep Elixir)"
+            echo "Erlang: $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell)"
             echo ""
 
             # Set KUBECONFIG if k3s-kubeconfig.yaml exists
