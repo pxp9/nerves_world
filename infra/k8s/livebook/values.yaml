@@ -16,6 +16,18 @@ livebook:
     existingSecret: "livebook-auth"
     existingSecretPasswordKey: "livebookPassword"
 
+  # Ingress configuration
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hostname: livebook.46.224.118.16.nip.io
+    path: /
+    pathType: Prefix
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    tls: true
+
 # Service configuration
 service:
   type: NodePort
