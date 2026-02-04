@@ -19,7 +19,7 @@ nervesHub:
     liveViewSigningSalt: ""
 
     # Hostname for accessing NervesHub
-    host: "nerveshub.local"
+    host: "nerves-hub.46.224.118.16.nip.io"
 
     # Database connection (uses PostgreSQL service if enabled)
     databaseUrl: "postgresql://postgres:postgres@nerves-hub-postgresql:5432/nerves_hub?ssl=false"
@@ -42,19 +42,20 @@ nervesHub:
 
   # Ingress configuration
   ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    enabled: true
+    className: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
     hosts:
-      - host: nerves-hub.local
+      - host: nerves-hub.46.224.118.16.nip.io
         paths:
           - path: /
             pathType: Prefix
-    tls: []
-      # - secretName: nerves-hub-tls
-      #   hosts:
-      #     - nerves-hub.local
+    tls:
+      - secretName: nerves-hub-tls-cert
+        hosts:
+          - nerves-hub.46.224.118.16.nip.io
 
   # Resource limits
   resources:
