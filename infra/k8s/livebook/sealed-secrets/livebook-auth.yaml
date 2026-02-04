@@ -1,0 +1,13 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: livebook-auth
+  namespace: livebook
+spec:
+  encryptedData:
+    livebookPassword: AgCKFLWkgvY12yZnUUgVHXQ/LaOENr+6evNYrjuxtTu0iUcMXIJjqsASzc2HMSWONDdwqL5AD0rIQteHj65Wj4X/XgSjkxUllSfXHqO+mgtNKi7ud5QSnlTZyYe0imUf4gQ+5alZYWaYI7304H5dCcaBg2llgYK20PC86DNZYLmmV4zyXunwUZTvwHrQnf1vrFqf2p6BAS6JnB3mP/cCWFzKzJINvsMqrAA/jgjpkjcZ+FA+LiAZww98CQzn9LWPCdGhLQLJIEVHk42SkypBjihEwzKiQhhN+XCJboevcBPzxQPWeIQMxJ5twhtqJDXzicgOqLWoJjfH6WBcZqBgpe6ykKZD9UU8dt3Y6Ws6OjMDl7XGjdgBBtN0rLPJkJzQJwp4XjWe7Uo8QZs6Yyi3+6OL+Ylz4ndBcllG1VSwdzLhAdJf4zbMNaUSNmbSk7yAJtlf8/U9/Q1DkXBIaOtawoShsfUmVw6sBeIf3hXVMZNR9bkwJTl44GiDDi7BVloLtThF3Ds4Cphi7eLqaOtkr8vMmeJ0RB7iHadzrk0gzgXH36bA/DFqj4awV7OCBgvXChhZUPws9PP8bzgajYB6VwAcSG0uID+XO3fiI0j0Rr7xOVUXTWDTr7wn1UmO8m9Jp30BTUN2VU+CJIh3LVxc6W1JFLBd6UUEIOZDk2EZpcTszR67kNIEJjbrTCI+0DAXxwSl9tvIcVbvvZ0r3qJZznUXvjKiCGi9IdxEH75cWrCcUSUWPgsV/jYXcsSS9g==
+  template:
+    metadata:
+      name: livebook-auth
+      namespace: livebook

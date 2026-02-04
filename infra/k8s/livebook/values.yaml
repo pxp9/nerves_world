@@ -11,8 +11,10 @@ livebook:
     tag: "0.18.1"
 
   # Authentication (minimum 12 characters required)
+  # Password is managed via SealedSecret in sealed-secrets/livebook-auth.yaml
   auth:
-    livebookPassword: "changeme123456"  # Change this to a secure password!
+    existingSecret: "livebook-auth"
+    existingSecretPasswordKey: "livebookPassword"
 
 # Service configuration
 service:

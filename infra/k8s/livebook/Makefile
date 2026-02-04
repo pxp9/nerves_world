@@ -1,4 +1,4 @@
-.PHONY: install upgrade uninstall status logs port-forward help
+.PHONY: install upgrade uninstall status logs port-forward help apply-sealed-secrets
 
 RELEASE_NAME := livebook
 NAMESPACE := livebook
@@ -6,15 +6,20 @@ CHART := oci://ghcr.io/mruoss/charts/livebook
 
 help:
 	@echo "Available targets:"
-	@echo "  make install      - Install Livebook using Helm"
-	@echo "  make upgrade      - Upgrade Livebook deployment"
-	@echo "  make uninstall    - Uninstall Livebook"
-	@echo "  make status       - Check Livebook deployment status"
-	@echo "  make logs         - View Livebook logs"
-	@echo "  make port-forward - Forward Livebook to localhost:9000"
+	@echo "  make install              - Install Livebook using Helm"
+	@echo "  make upgrade              - Upgrade Livebook deployment"
+	@echo "  make uninstall            - Uninstall Livebook"
+	@echo "  make status               - Check Livebook deployment status"
+	@echo "  make logs                 - View Livebook logs"
+	@echo "  make port-forward         - Forward Livebook to localhost:9000"
+	@echo "  make apply-sealed-secrets - Apply sealed secrets to cluster"
+
+# Apply SealedSecrets
+apply-sealed-secrets:
+	kubectl apply -f sealed-secrets/
 
 # Install Livebook
-install:
+install: apply-sealed-secrets
 	kubectl create namespace $(NAMESPACE) --dry-run=client -o yaml | kubectl apply -f -
 	helm install $(RELEASE_NAME) $(CHART) \
 		--namespace $(NAMESPACE) \
@@ -25,7 +30,7 @@ install:
 	@echo "Check service with: make status"
 
 # Upgrade Livebook
-upgrade:
+upgrade: apply-sealed-secrets
 	helm upgrade $(RELEASE_NAME) $(CHART) \
 		--namespace $(NAMESPACE) \
 		--values values.yaml \
