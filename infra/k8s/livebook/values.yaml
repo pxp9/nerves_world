@@ -28,6 +28,12 @@ livebook:
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
     tls: true
 
+  # Persistence configuration
+  persistence:
+    enabled: true
+    size: 5Gi
+    mountPath: /data
+
 # Service configuration
 service:
   type: NodePort
@@ -41,8 +47,3 @@ resources:
   limits:
     memory: "1Gi"
     cpu: "1000m"
-
-# Persistence
-persistence:
-  enabled: true
-  size: 5Gi
